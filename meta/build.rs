@@ -23,8 +23,12 @@ fn main() {
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let hash_path = out_dir.join("pest_hash.sha1");
 
-    // If `grammar.pest` exists (we're building from git sources)
-    if grammar_pest_path.exists() {
+    let should_bootstrap =
+        !is_no_bootstrap_feature_set()
+        // If `grammar.pest` exists (we're building from git sources)
+        && grammar_pest_path.exists();
+
+    if should_bootstrap {
         let mut sha = Sha1::default();
 
         let old_hash = File::open(&hash_path).ok().map(|mut file| {
@@ -70,3 +74,9 @@ fn main() {
         );
     }
 }
+
+#[cfg(feature = "no-bootstrap")]
+fn is_no_bootstrap_feature_set() -> bool { true }
+
+#[cfg(not(feature = "no-bootstrap"))]
+fn is_no_bootstrap_feature_set() -> bool { false }

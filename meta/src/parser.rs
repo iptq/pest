@@ -539,8 +539,8 @@ fn consume_expr<'i>(
             };
 
             return Ok(ParserNode {
-                expr: ParserExpr::Custom(pair.as_str().to_owned()),
-                span: pair.as_span(),
+                expr: ParserExpr::Custom(path.as_str().to_owned()),
+                span: path.as_span(),
             });
         }
         break;
