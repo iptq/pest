@@ -25,3 +25,13 @@ pub enum QueueableToken<R> {
         input_pos: usize,
     },
 }
+
+impl<R> QueueableToken<R> {
+    pub fn input_pos(&self) -> usize {
+        match self {
+            QueueableToken::Start { input_pos, .. } | QueueableToken::End { input_pos, .. } => {
+                *input_pos
+            }
+        }
+    }
+}

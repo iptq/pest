@@ -105,6 +105,7 @@ impl<'i> ParserNode<'i> {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ParserExpr<'i> {
+    Custom(String),
     Str(String),
     Insens(String),
     Range(String, String),
@@ -132,6 +133,7 @@ fn convert_rule(rule: ParserRule) -> AstRule {
 
 fn convert_node(node: ParserNode) -> Expr {
     match node.expr {
+        ParserExpr::Custom(string) => Expr::Custom(string),
         ParserExpr::Str(string) => Expr::Str(string),
         ParserExpr::Insens(string) => Expr::Insens(string),
         ParserExpr::Range(start, end) => Expr::Range(start, end),
@@ -215,7 +217,7 @@ fn consume_rules_with_spans<'i>(
 }
 
 fn consume_expr<'i>(
-    pairs: Peekable<Pairs<'i, Rule>>,
+    mut pairs: Peekable<Pairs<'i, Rule>>,
     climber: &PrecClimber<Rule>,
 ) -> Result<ParserNode<'i>, Vec<Error<Rule>>> {
     fn unaries<'i>(
@@ -521,6 +523,29 @@ fn consume_expr<'i>(
         Ok(node)
     }
 
+    // custom case
+    'outer: loop {
+        if let Some(pair) = pairs.peek() {
+            // pair is Rule::expression
+            let mut pairs = pair.clone().into_inner().peekable();
+            let pair = pairs.next().unwrap();
+
+            let path = match pair.as_rule() {
+                Rule::path_expr => pair.clone().into_inner().next().unwrap(),
+                Rule::path => pair.clone(),
+
+                // this means we didn't actually match path_expr OR path
+                _ => break 'outer,
+            };
+
+            return Ok(ParserNode {
+                expr: ParserExpr::Custom(pair.as_str().to_owned()),
+                span: pair.as_span(),
+            });
+        }
+        break;
+    }
+
     let term = |pair: Pair<'i, Rule>| unaries(pair.into_inner().peekable(), climber);
     let infix = |lhs: Result<ParserNode<'i>, Vec<Error<Rule>>>,
                  op: Pair<'i, Rule>,
@@ -615,6 +640,15 @@ fn unescape(string: &str) -> Option<String> {
 mod tests {
     use super::super::unwrap_or_report;
     use super::*;
+
+    #[test]
+    fn custom() {
+        let res = PestParser::parse(Rule::expression, "#path::to::function");
+        println!("res: {:?}", res);
+
+        let expr = consume_expr(res.unwrap().peekable(), &PrecClimber::new(vec![])).unwrap();
+        assert_eq!(expr.expr, ParserExpr::Custom("path::to::function".to_owned()));
+    }
 
     #[test]
     fn rules() {

@@ -69,6 +69,10 @@ impl<'i> Position<'i> {
         Position { input, pos: 0 }
     }
 
+    pub fn get_str(&self) -> &str {
+        self.input
+    }
+
     /// Returns the byte position of this `Position` as a `usize`.
     ///
     /// # Examples

@@ -240,6 +240,16 @@ fn generate_rule(rule: OptimizedRule) -> TokenStream {
     };
 
     match rule.ty {
+        RuleType::Custom => quote! {
+            #[inline]
+            #[allow(non_snake_case, unused_variables)]
+            pub fn #name(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                state.rule(Rule::#name, |state| {
+                    #expr
+                })
+            }
+        },
+
         RuleType::Normal => quote! {
             #[inline]
             #[allow(non_snake_case, unused_variables)]
@@ -339,6 +349,16 @@ fn generate_skip(rules: &[OptimizedRule]) -> TokenStream {
 
 fn generate_expr(expr: OptimizedExpr) -> TokenStream {
     match expr {
+        OptimizedExpr::Custom(s) => {
+            use syn::{parse::Parse, Path};
+
+            let t = s.parse::<TokenStream>().unwrap();
+            let p = syn::parse::<Path>(t.into()).unwrap();
+            quote! {
+                #p(state)
+            }
+        }
+
         OptimizedExpr::Str(string) => {
             quote! {
                 state.match_string(#string)
@@ -485,6 +505,12 @@ fn generate_expr(expr: OptimizedExpr) -> TokenStream {
 
 fn generate_expr_atomic(expr: OptimizedExpr) -> TokenStream {
     match expr {
+        OptimizedExpr::Custom(string) => {
+            quote! {
+                #string
+            }
+        }
+
         OptimizedExpr::Str(string) => {
             quote! {
                 state.match_string(#string)

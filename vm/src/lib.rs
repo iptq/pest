@@ -89,6 +89,7 @@ impl Vm {
         if let Some(rule) = self.rules.get(rule) {
             if &rule.name == "WHITESPACE" || &rule.name == "COMMENT" {
                 match rule.ty {
+                    RuleType::Custom => todo!("yo mama"),
                     RuleType::Normal => state.rule(&rule.name, |state| {
                         state.atomic(Atomicity::Atomic, |state| {
                             self.parse_expr(&rule.expr, state)
@@ -111,6 +112,7 @@ impl Vm {
                 }
             } else {
                 match rule.ty {
+                    RuleType::Custom => todo!("custom ruletype"),
                     RuleType::Normal => {
                         state.rule(&rule.name, move |state| self.parse_expr(&rule.expr, state))
                     }
@@ -147,6 +149,7 @@ impl Vm {
         state: Box<ParserState<'i, &'a str>>,
     ) -> ParseResult<Box<ParserState<'i, &'a str>>> {
         match *expr {
+            OptimizedExpr::Custom(ref string) => todo!("vm parse_expr custom"),
             OptimizedExpr::Str(ref string) => state.match_string(string),
             OptimizedExpr::Insens(ref string) => state.match_insensitive(string),
             OptimizedExpr::Range(ref start, ref end) => {

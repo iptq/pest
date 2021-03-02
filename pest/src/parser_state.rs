@@ -146,6 +146,11 @@ impl<'i, R: RuleType> ParserState<'i, R> {
         &self.position
     }
 
+    /// lol fuck
+    pub fn queue(&self) -> &Vec<QueueableToken<R>> {
+        &self.queue
+    }
+
     /// Returns the current atomicity of the `ParserState`.
     ///
     /// # Examples
