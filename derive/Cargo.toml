@@ -24,7 +24,3 @@ pest_generator = { path = "../generator", version = "2.1.0" }
 codecov = { repository = "pest-parser/pest" }
 maintenance = { status = "actively-developed" }
 travis-ci = { repository = "pest-parser/pest" }
-
-[features]
-default = []
-no-bootstrap = ["pest_generator/no-bootstrap"]
