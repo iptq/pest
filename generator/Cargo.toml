@@ -22,3 +22,7 @@ syn = "1.0"
 codecov = { repository = "pest-parser/pest" }
 maintenance = { status = "actively-developed" }
 travis-ci = { repository = "pest-parser/pest" }
+
+[features]
+default = []
+no-bootstrap = ["pest_meta/no-bootstrap"]
