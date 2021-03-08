@@ -3,7 +3,12 @@ extern crate quote;
 extern crate pest_generator;
 
 use pest_generator::derive_parser;
-use std::{fs::File, io::prelude::*, env, path::{Path, PathBuf}};
+use std::{
+    env,
+    fs::File,
+    io::prelude::*,
+    path::{Path, PathBuf},
+};
 
 fn main() {
     let pest = Path::new(concat!(
@@ -34,7 +39,11 @@ fn main() {
 }
 
 #[cfg(feature = "bootstrap-in-src")]
-fn should_bootstrap_in_src() -> bool { true }
+fn should_bootstrap_in_src() -> bool {
+    true
+}
 
 #[cfg(not(feature = "bootstrap-in-src"))]
-fn should_bootstrap_in_src() -> bool { false }
+fn should_bootstrap_in_src() -> bool {
+    false
+}

@@ -651,7 +651,10 @@ mod tests {
         println!("res: {:?}", res);
 
         let expr = consume_expr(res.unwrap().peekable(), &PrecClimber::new(vec![])).unwrap();
-        assert_eq!(expr.expr, ParserExpr::Custom("path::to::function".to_owned()));
+        assert_eq!(
+            expr.expr,
+            ParserExpr::Custom("path::to::function".to_owned())
+        );
     }
 
     #[test]

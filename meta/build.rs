@@ -2,19 +2,19 @@ extern crate cargo;
 extern crate sha1;
 
 use std::env;
+use std::ffi::OsString;
 use std::fs::{self, File};
 use std::io::prelude::*;
-use std::ffi::OsString;
-use std::str::FromStr;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::str::FromStr;
 
-use sha1::{Digest, Sha1};
 use cargo::{
-    core::{Workspace, compiler::CompileMode},
-    ops::{self, Packages, CompileOptions},
-    util::{config::Config, interning::InternedString}
+    core::{compiler::CompileMode, Workspace},
+    ops::{self, CompileOptions, Packages},
+    util::{config::Config, interning::InternedString},
 };
+use sha1::{Digest, Sha1};
 
 fn display_digest(digest: &[u8]) -> String {
     digest.iter().map(|byte| format!("{:02x}", byte)).collect()
@@ -84,7 +84,9 @@ fn main() {
             let path = if should_bootstrap_in_src() {
                 OsString::from(grammar_rs_path)
             } else {
-                format!("{}/__pest_grammar.rs", env::var("OUT_DIR").unwrap()).parse::<OsString>().unwrap()
+                format!("{}/__pest_grammar.rs", env::var("OUT_DIR").unwrap())
+                    .parse::<OsString>()
+                    .unwrap()
             };
             ops::run(&workspace, &opts, &[path]).unwrap();
         } else {
@@ -99,7 +101,11 @@ fn main() {
 }
 
 #[cfg(feature = "bootstrap-in-src")]
-fn should_bootstrap_in_src() -> bool { true }
+fn should_bootstrap_in_src() -> bool {
+    true
+}
 
 #[cfg(not(feature = "bootstrap-in-src"))]
-fn should_bootstrap_in_src() -> bool { false }
+fn should_bootstrap_in_src() -> bool {
+    false
+}

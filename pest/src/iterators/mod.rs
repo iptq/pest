@@ -18,5 +18,5 @@ mod tokens;
 pub use self::flat_pairs::FlatPairs;
 pub use self::pair::Pair;
 pub use self::pairs::Pairs;
-pub(crate) use self::queueable_token::QueueableToken;
+pub use self::queueable_token::QueueableToken;
 pub use self::tokens::Tokens;
